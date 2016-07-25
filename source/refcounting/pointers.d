@@ -4,12 +4,12 @@ import std.experimental.allocator : make, dispose, theAllocator, IAllocator;
 import std.algorithm.mutation : move;
 import std.typecons : Proxy;
 
-mixin template TypeRef(T) {
+template TypeRef(T) {
 
 	static if (is (T == class)) {
-		alias Type = T;
+		alias TypeRef  = T;
 	} else {
-		alias Type = T*;
+		alias TypeRef = T*;
 	}
 
 } // TypeRef
@@ -30,7 +30,7 @@ mixin template GetRef(T, alias ptr) {
 
 private struct Data(T) {
 
-	mixin TypeRef!T;
+	alias Type = TypeRef!T;
 
 	// save this here
 	IAllocator allocator;
@@ -50,6 +50,7 @@ struct SharedPtr(T) {
 	}
 	
 	mixin GetRef!(data_.Type, data_);
+	mixin Proxy!get;
 
 	// no default construction
 	@disable this();
@@ -160,11 +161,16 @@ unittest {
 
 struct UniquePtr(T) {
 
-	mixin TypeRef!T;
+	alias Type = TypeRef!T;
 	mixin GetRef!(T, data_);
+	mixin Proxy!get;
+
+	private {
 
 		IAllocator allocator_;
 		Type data_;
+
+	}
 
 	// no default construction
 	@disable this();
@@ -188,8 +194,6 @@ struct UniquePtr(T) {
 	auto release() {
 		return move(this);
 	} // release
-
-	mixin Proxy!get;
 
 } // UniquePtr
 
