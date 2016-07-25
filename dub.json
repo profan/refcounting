@@ -1,0 +1,8 @@
+{
+	"name": "refcounting",
+	"description": "A minimal D application.",
+	"copyright": "Copyright © 2016, profan",
+	"authors": ["profan"],
+	"dependencies": {
+	}
+}
